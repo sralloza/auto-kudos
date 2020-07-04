@@ -1,0 +1,71 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run app",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": ["-m", "strava_api", "online-mode", "${input:online-mode}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean with git",
+      "type": "shell",
+      "command": "git clean -fdx -e data -e .venv -e tests",
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint current file",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": ["-m", "pylint", "${file}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Run coverage report",
+      "type": "shell",
+      "command": "${config:python.pythonPath} -m coverage run -m pytest -vv -l & ${config:python.pythonPath} -m coverage html & chrome.exe ${workspaceFolder}\\htmlcov\\index.html",
+      "problemMatcher": []
+    },
+    {
+      "label": "check everything",
+      "type": "shell",
+      "dependsOn": ["black code", "black tests", "pylint code", "pylint tests"],
+      "problemMatcher": []
+    },
+    {
+      "label": "black code",
+      "type": "shell",
+      "command": "${config:python.pythonPath} -m black .",
+      "problemMatcher": []
+    },
+    {
+      "label": "black tests",
+      "type": "shell",
+      "command": "${config:python.pythonPath} -m black tests",
+      "problemMatcher": []
+    },
+    {
+      "label": "pylint code",
+      "type": "shell",
+      "command": "${config:python.pythonPath} -m pylint strava_api --ignore=_version.py -d C0330,W0622,R0913,R0903,W0511",
+      "problemMatcher": []
+    },
+    {
+      "label": "pylint tests",
+      "type": "shell",
+      "command": "${config:python.pythonPath} -m pylint tests -d C0330,C0114,C0115,C0116,R0201,R0915,W0201,R0914,R0912,C0415,R0903,R0801",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "online-mode",
+      "type": "pickString",
+      "options": ["True", "False", ""],
+      "description": "Set online mode"
+    }
+  ]
+}
