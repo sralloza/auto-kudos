@@ -32,3 +32,9 @@ class Activity:
         response = session.post(self.kudo_endpoint)
         result = response.json().get("success", False)
         logger.debug("Result: %s", result)
+
+    def ensure_kudo(self):
+        """If the activity has not a kudo, give it."""
+
+        if not self.has_kudo:
+            self.give_kudo()

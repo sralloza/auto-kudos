@@ -42,4 +42,4 @@ def give_kudos_to_everyone():
 
     activities = get_activities()
     for activity in activities:
-        activity.give_kudo()
+        activity.ensure_kudo()
