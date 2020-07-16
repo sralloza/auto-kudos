@@ -1,0 +1,13 @@
+[run]
+branch = True
+
+source = strava_api, tests, ./
+
+omit =
+    .venv/*
+    launcher.py
+
+[report]
+exclude_lines =
+    if __name__ == .__main__.:
+    if __name__ == "__main__":
