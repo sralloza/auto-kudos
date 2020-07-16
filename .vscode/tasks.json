@@ -7,13 +7,13 @@
       "label": "Run app",
       "type": "shell",
       "command": "${config:python.pythonPath}",
-      "args": ["-m", "strava_api", "online-mode", "${input:online-mode}"],
+      "args": ["-m", "strava_api"],
       "problemMatcher": []
     },
     {
       "label": "Clean with git",
       "type": "shell",
-      "command": "git clean -fdx -e data -e .venv -e tests",
+      "command": "git clean -fdx -e data -e .venv -e tests -e strava-creds.yml",
       "problemMatcher": []
     },
     {
@@ -58,14 +58,6 @@
       "type": "shell",
       "command": "${config:python.pythonPath} -m pylint tests -d C0330,C0114,C0115,C0116,R0201,R0915,W0201,R0914,R0912,C0415,R0903,R0801",
       "problemMatcher": []
-    }
-  ],
-  "inputs": [
-    {
-      "id": "online-mode",
-      "type": "pickString",
-      "options": ["True", "False", ""],
-      "description": "Set online mode"
     }
   ]
 }
