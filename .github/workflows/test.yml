@@ -22,6 +22,10 @@ jobs:
           pip install black pytest pytest-cov
           pip install -r requirements.txt
           pip install -e .
+      - name: create sample credentials
+        run: |
+          echo "email: email" >> ./strava-creds.yml
+          echo "password: password" >> ./strava-creds.yml
       - name: Test with pytest
         run: |
           pytest -vv -l --cov=./ --cov-report=xml

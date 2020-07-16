@@ -16,18 +16,29 @@ class Credentials:
     username = ""
     password = ""
 
-    if not CREDENTIALS_PATH.is_file():
-        with CREDENTIALS_PATH.open("wt", encoding="utf8") as file_handler:
-            YAML().dump({"email": None, "password": None}, file_handler)
+    @classmethod
+    def gen_credentials(cls):
+        """Generates credentials reading the credentials file (`strava-creds.yml`).
 
-        logger = getLogger(__name__)
-        logger.critical("Credentials not found")
-        raise CredentialsNotFoundError("Credentials not found")
+        Raises:
+            CredentialsNotFoundError: if the credentials file doesn't exist.
 
-    data = YAML().load(CREDENTIALS_PATH.read_text())
-    username = data["email"]
-    password = data["password"]
-    del data
+        Returns:
+            Credentials: strava credentials.
+        """
+
+        if not CREDENTIALS_PATH.is_file():
+            with CREDENTIALS_PATH.open("wt", encoding="utf8") as file_handler:
+                YAML().dump({"email": None, "password": None}, file_handler)
+
+            logger = getLogger(__name__)
+            logger.critical("Credentials not found")
+            raise CredentialsNotFoundError("Credentials not found")
+
+        data = YAML().load(CREDENTIALS_PATH.read_text())
+        cls.username = data["email"]
+        cls.password = data["password"]
+        return cls()
 
 
-credentials = Credentials()
+credentials = Credentials.gen_credentials()

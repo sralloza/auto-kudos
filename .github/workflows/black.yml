@@ -24,7 +24,7 @@ jobs:
           pip install -e .
       - name: Lint with black module
         run: |
-          black --diff --check server_manager
+          black --diff --check strava_api
       - name: Lint with black tests
         run: |
           black --diff --check tests
