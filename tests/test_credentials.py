@@ -19,7 +19,6 @@ def test_gen_credentials_fail(yaml_m, creds_path_m, caplog):
     creds_path_m.is_file.return_value = False
     caplog.set_level(10, "strava_api.credentials")
 
-
     with pytest.raises(CredentialsNotFoundError, match="Credentials not found"):
         Credentials.gen_credentials()
 
@@ -34,6 +33,7 @@ def test_gen_credentials_fail(yaml_m, creds_path_m, caplog):
     assert len(caplog.records) == 1
     assert caplog.records[0].message == "Credentials not found"
     assert caplog.records[0].levelname == "CRITICAL"
+
 
 @mock.patch("strava_api.credentials.CREDENTIALS_PATH")
 @mock.patch("strava_api.credentials.YAML")
