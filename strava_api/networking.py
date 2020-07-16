@@ -24,7 +24,6 @@ class Session(ReqSession):
         """Logs into the strava website."""
 
         self.logger.debug("Logging in")
-        print("Logging in")
         response = self.get(self.primary_url)
         soup = BeautifulSoup(response.text, "html.parser")
         utf8 = soup.find("input", {"name": "utf8"})["value"]

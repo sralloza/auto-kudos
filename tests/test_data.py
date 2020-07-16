@@ -7,9 +7,8 @@ from strava_api.data import get_activities, give_kudos_to_everyone
 
 @mock.patch("strava_api.data.session.get")
 def test_get_activities(get_m):
-    get_m.return_value.text = (
-        Path(__file__).with_name("example.html").read_text(encoding="utf8")
-    )
+    data_path = Path(__file__).with_name("example.html.data")
+    get_m.return_value.text = data_path.read_text(encoding="utf8")
     activities = get_activities()
     for i, act in enumerate(activities):
         i += 1

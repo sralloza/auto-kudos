@@ -6,6 +6,7 @@ source = strava_api, tests, ./
 omit =
     .venv/*
     launcher.py
+    setup.py
 
 [report]
 exclude_lines =
