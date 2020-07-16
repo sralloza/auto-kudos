@@ -33,5 +33,16 @@ def test_give_kudo(post_m, activity, caplog):
 
     assert len(caplog.records) == 2
     assert caplog.records[0].msg == "Giving kudo to %s"
-    assert caplog.records[0].args == (activity, )
+    assert caplog.records[0].args == (activity,)
     assert caplog.records[1].message == "Result: true"
+
+
+def test_ensure_kudo(activity):
+    activity.has_kudo = True
+    activity.give_kudo = mock.MagicMock()
+    activity.ensure_kudo()
+    activity.give_kudo.assert_not_called()
+
+    activity.has_kudo = False
+    activity.ensure_kudo()
+    activity.give_kudo.assert_called_once_with()
