@@ -35,10 +35,9 @@ def test_gen_credentials_fail(yaml_m, creds_path_m, caplog):
     assert caplog.records[0].message == "Credentials not found"
     assert caplog.records[0].levelname == "CRITICAL"
 
-@mock.patch("strava_api.credentials.Credentials")
 @mock.patch("strava_api.credentials.CREDENTIALS_PATH")
 @mock.patch("strava_api.credentials.YAML")
-def test_gen_credentials_ok(yaml_m, creds_path_m, creds_m, caplog):
+def test_gen_credentials_ok(yaml_m, creds_path_m, caplog):
     creds_path_m.is_file.return_value = True
     caplog.set_level(10, "strava_api.credentials")
 
@@ -52,7 +51,7 @@ def test_gen_credentials_ok(yaml_m, creds_path_m, creds_m, caplog):
     yaml_m.assert_called_once_with()
     yaml_m.return_value.load.assert_called_with(file_content)
 
-    assert creds_m.username == "email@example.com"
-    assert creds_m.password == "pass"
+    assert Credentials.username == "email@example.com"
+    assert Credentials.password == "pass"
 
     assert len(caplog.records) == 0
