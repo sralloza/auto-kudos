@@ -1,9 +1,12 @@
 """Manages outgoing connections."""
 
 from logging import getLogger
+
 from bs4 import BeautifulSoup
 from requests import Session as ReqSession
+
 from .credentials import credentials
+from .exceptions import LoginError
 
 
 class Session(ReqSession):
@@ -38,6 +41,9 @@ class Session(ReqSession):
         }
 
         response = self.post(self.login_url, data=payload)
+        if "/login" in response.url:
+            raise LoginError("Credentials are not valid")
+
         self.headers.update({"x-csrf-token": token})
         self.logger.debug("Logged in")
 
