@@ -7,3 +7,7 @@ class StravaError(Exception):
 
 class CredentialsNotFoundError(StravaError):
     """Credentials not found error."""
+
+
+class LoginError(StravaError):
+    """Credentials are not valid."""
