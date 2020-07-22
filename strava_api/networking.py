@@ -64,3 +64,5 @@ class Session(ReqSession, metaclass=MetaSingleton):
                 retries -= 1
                 if not retries:
                     raise ConnectionError from exc
+
+        raise ConnectionError
