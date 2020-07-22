@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from logging import getLogger
 
-from .networking import session
+from .networking import Session
 
 
 @dataclass
@@ -28,6 +28,8 @@ class Activity:
         """Gives a kudo to the user that did the activity."""
 
         logger = getLogger(__name__)
+        session = Session()
+
         logger.debug("Giving kudo to %s", self)
         response = session.post(self.kudo_endpoint)
         result = response.json().get("success", False)

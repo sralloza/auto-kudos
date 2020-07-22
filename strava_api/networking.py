@@ -1,12 +1,16 @@
 """Manages outgoing connections."""
 
 from logging import getLogger
+
 from bs4 import BeautifulSoup
-from requests import Session as ReqSession
+from requests import ConnectionError as ReqConnectionError, Session as ReqSession
+
 from .credentials import credentials
+from .exceptions import LoginError
+from .utils import MetaSingleton
 
 
-class Session(ReqSession):
+class Session(ReqSession, metaclass=MetaSingleton):
     """HTTP session to get data from the strava website."""
 
     def __init__(self):
@@ -14,16 +18,18 @@ class Session(ReqSession):
         self.headers.update({"user-agent": "strava-py"})
 
         self.logger = getLogger(__name__)
+        self.retries = 5
         self.primary_url = "https://www.strava.com/dashboard"
         self.login_url = "https://www.strava.com/session"
         self.data_url = "https://www.strava.com/dashboard/following/1000"
-
-        self.login()
+        self.logged_in = False
+        self.logging_in = False
 
     def login(self):
         """Logs into the strava website."""
 
         self.logger.debug("Logging in")
+        self.logging_in = True
         response = self.get(self.primary_url)
         soup = BeautifulSoup(response.text, "html.parser")
         utf8 = soup.find("input", {"name": "utf8"})["value"]
@@ -38,8 +44,25 @@ class Session(ReqSession):
         }
 
         response = self.post(self.login_url, data=payload)
+        if "/login" in response.url:
+            raise LoginError("Credentials are not valid")
+
         self.headers.update({"x-csrf-token": token})
         self.logger.debug("Logged in")
+        self.logged_in = True
+        self.logging_in = False
 
+    def request(self, *args, **kwargs):  # pylint: disable=signature-differs
+        if not self.logged_in and not self.logging_in:
+            self.login()
 
-session = Session()
+        retries = self.retries
+        while retries:
+            try:
+                return super().request(*args, **kwargs)
+            except ReqConnectionError as exc:
+                retries -= 1
+                if not retries:
+                    raise ConnectionError from exc
+
+        raise ConnectionError
