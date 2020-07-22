@@ -7,9 +7,10 @@ from requests import ConnectionError as ReqConnectionError, Session as ReqSessio
 
 from .credentials import credentials
 from .exceptions import LoginError
+from .utils import MetaSingleton
 
 
-class Session(ReqSession):
+class Session(ReqSession, metaclass=MetaSingleton):
     """HTTP session to get data from the strava website."""
 
     def __init__(self):
@@ -51,7 +52,7 @@ class Session(ReqSession):
         self.logged_in = True
         self.logging_in = False
 
-    def request(self, *args, **kwargs):
+    def request(self, *args, **kwargs):  # pylint: disable=signature-differs
         if not self.logged_in and not self.logging_in:
             self.login()
 
@@ -63,6 +64,3 @@ class Session(ReqSession):
                 retries -= 1
                 if not retries:
                     raise ConnectionError from exc
-
-
-session = Session()

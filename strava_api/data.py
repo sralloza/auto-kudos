@@ -6,7 +6,7 @@ from typing import List
 from bs4 import BeautifulSoup
 
 from .activity import Activity
-from .networking import session
+from .networking import Session
 
 
 def get_activities() -> List[Activity]:
@@ -17,6 +17,7 @@ def get_activities() -> List[Activity]:
     """
 
     logger = getLogger(__name__)
+    session = Session()
     response = session.get(session.data_url)
     soup = BeautifulSoup(response.text, "html.parser")
 

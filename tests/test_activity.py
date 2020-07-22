@@ -22,7 +22,7 @@ def test_kudo_endpoint(activity):
     assert isinstance(activity.kudo_endpoint, str)
 
 
-@mock.patch("strava_api.activity.session.post")
+@mock.patch("strava_api.activity.Session.post")
 def test_give_kudo(post_m, activity, caplog):
     caplog.set_level(10, "strava_api.activity")
     post_m.return_value.json.return_value = {"success": "true"}
