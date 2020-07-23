@@ -13,45 +13,61 @@ def test_credentials_path():
     assert CREDENTIALS_PATH.suffix == ".yml"
 
 
-@mock.patch("strava_api.credentials.CREDENTIALS_PATH")
-@mock.patch("strava_api.credentials.YAML")
-def test_gen_credentials_fail(yaml_m, creds_path_m, caplog):
-    creds_path_m.is_file.return_value = False
-    caplog.set_level(10, "strava_api.credentials")
+class TestGenCredentials:
+    @pytest.fixture(autouse=True)
+    def mocks(self):
+        self.environ_m = mock.patch("strava_api.credentials.environ").start()
+        self.creds_path_m = mock.patch(
+            "strava_api.credentials.CREDENTIALS_PATH"
+        ).start()
+        self.yaml_m = mock.patch("strava_api.credentials.YAML").start()
+        yield
+        mock.patch.stopall()
 
-    with pytest.raises(CredentialsNotFoundError, match="Credentials not found"):
-        Credentials.gen_credentials()
+    def test_fail(self, caplog):
+        self.environ_m.get = dict().get
+        self.creds_path_m.is_file.return_value = False
+        caplog.set_level(10, "strava_api.credentials")
 
-    data = {"email": None, "password": None}
-    creds_path_m.open.assert_called_once_with("wt", encoding="utf8")
-    creds_path_m.open.return_value.__enter__.assert_called_once()
-    creds_path_m.open.return_value.__exit__.assert_called_once()
-    file_handler = creds_path_m.open.return_value.__enter__.return_value
-    yaml_m.assert_called_once_with()
-    yaml_m.return_value.dump.assert_called_with(data, file_handler)
+        with pytest.raises(CredentialsNotFoundError, match="Credentials not found"):
+            Credentials.gen_credentials()
 
-    assert len(caplog.records) == 1
-    assert caplog.records[0].message == "Credentials not found"
-    assert caplog.records[0].levelname == "CRITICAL"
+        data = {"email": None, "password": None}
+        self.creds_path_m.open.assert_called_once_with("wt", encoding="utf8")
+        self.creds_path_m.open.return_value.__enter__.assert_called_once()
+        self.creds_path_m.open.return_value.__exit__.assert_called_once()
+        file_handler = self.creds_path_m.open.return_value.__enter__.return_value
+        self.yaml_m.assert_called_once_with()
+        self.yaml_m.return_value.dump.assert_called_with(data, file_handler)
 
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Credentials not found"
+        assert caplog.records[0].levelname == "CRITICAL"
 
-@mock.patch("strava_api.credentials.CREDENTIALS_PATH")
-@mock.patch("strava_api.credentials.YAML")
-def test_gen_credentials_ok(yaml_m, creds_path_m, caplog):
-    creds_path_m.is_file.return_value = True
-    caplog.set_level(10, "strava_api.credentials")
+    @pytest.mark.parametrize("mode", ["env", "file"])
+    def test_gen_credentials_ok(self, caplog, mode):
+        if mode == "env":
+            creds = {"STRAVA_USERNAME": "email@example.com", "STRAVA_PASSWORD": "pass"}
+            self.environ_m.get = creds.get
+            self.creds_path_m.is_file.return_value = False
+        else:
+            self.environ_m.get = dict().get
+            self.creds_path_m.is_file.return_value = True
+        caplog.set_level(10, "strava_api.credentials")
 
-    data = {"email": "email@example.com", "password": "pass"}
-    yaml_m.return_value.load.return_value = data
+        data = {"email": "email@example.com", "password": "pass"}
+        self.yaml_m.return_value.load.return_value = data
 
-    Credentials.gen_credentials()
+        credentials = Credentials.gen_credentials()
+        assert isinstance(credentials, Credentials)
 
-    creds_path_m.read_text.assert_called_once_with()
-    file_content = creds_path_m.read_text.return_value
-    yaml_m.assert_called_once_with()
-    yaml_m.return_value.load.assert_called_with(file_content)
+        if mode == "file":
+            self.creds_path_m.read_text.assert_called_once_with()
+            file_content = self.creds_path_m.read_text.return_value
+            self.yaml_m.assert_called_once_with()
+            self.yaml_m.return_value.load.assert_called_with(file_content)
 
-    assert Credentials.username == "email@example.com"
-    assert Credentials.password == "pass"
+        assert Credentials.username == "email@example.com"
+        assert Credentials.password == "pass"
 
-    assert len(caplog.records) == 0
+        assert len(caplog.records) == 0
