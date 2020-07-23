@@ -1,6 +1,7 @@
 """Manages credentials of the api."""
 
 from logging import getLogger
+from os import environ
 from pathlib import Path
 
 from ruamel.yaml import YAML
@@ -26,6 +27,14 @@ class Credentials:
         Returns:
             Credentials: strava credentials.
         """
+
+        username = environ.get("STRAVA_USERNAME")
+        password = environ.get("STRAVA_PASSWORD")
+
+        if username and password:
+            cls.username = username
+            cls.password = password
+            return cls()
 
         if not CREDENTIALS_PATH.is_file():
             with CREDENTIALS_PATH.open("wt", encoding="utf8") as file_handler:
