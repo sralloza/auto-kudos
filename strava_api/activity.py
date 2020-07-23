@@ -1,19 +1,21 @@
 """Manages activity matters."""
 
-from dataclasses import dataclass
 from logging import getLogger
 
 from .networking import Session
 
 
-@dataclass
 class Activity:
     """Represents an activity from Strava."""
 
-    username: str
-    activity_id: int
-    title: str
-    has_kudo: bool
+    def __init__(self, username: str, activity_id: int, title: str, has_kudo: bool):
+        self.username = str(username)
+        self.activity_id = int(activity_id)
+        self.title = str(title)
+        self.has_kudo = bool(has_kudo)
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
 
     @property
     def kudo_endpoint(self) -> str:
