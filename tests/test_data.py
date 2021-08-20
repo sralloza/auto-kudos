@@ -18,10 +18,23 @@ def test_get_activities(session_m):
 
 
 @mock.patch("strava_api.data.get_activities")
-def test_give_kudos_to_everyone(get_acts_m):
-    mymock = mock.MagicMock()
-    get_acts_m.return_value = [mymock] * 15
+def test_give_kudos_to_everyone(get_acts_m, caplog):
+    caplog.set_level(10, "strava_api.data")
+
+    mock_a = mock.MagicMock()
+    mock_b = mock.MagicMock()
+
+    mock_a.has_kudo = True
+    mock_b.has_kudo = False
+
+    get_acts_m.return_value = ([mock_a] * 5) + ([mock_b] * 10)
 
     give_kudos_to_everyone()
-    mymock.ensure_kudo.assert_called_with()
-    assert mymock.ensure_kudo.call_count == 15
+    mock_a.ensure_kudo.assert_called_with()
+    assert mock_a.ensure_kudo.call_count == 5
+    mock_b.ensure_kudo.assert_called_with()
+    assert mock_b.ensure_kudo.call_count == 10
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].msg == "Found %d potential kudo givings"
+    assert caplog.records[0].args == (10,)
