@@ -1,10 +1,10 @@
 """Manages data parsing."""
 
+from json import loads
 from logging import getLogger
 from typing import List
 
 from bs4 import BeautifulSoup
-from json import loads
 
 from .activity import Activity
 from .networking import Session
