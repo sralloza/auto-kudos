@@ -9,9 +9,11 @@ from strava_api.activity import Activity
 def activity():
     yield Activity("username", 654, "title", False)
 
+
 def test_repr(activity):
     expected = "Activity(username='username', id=654, title='title', has_kudo=False)"
     assert repr(activity) == expected
+
 
 def test_attributes(activity):
     assert hasattr(activity, "username")
