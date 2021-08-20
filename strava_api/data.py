@@ -44,6 +44,8 @@ def give_kudos_to_everyone():
     logger = getLogger(__name__)
 
     activities = get_activities()
-    logger.info("Found %d potential kudo givings", sum((not x.has_kudo for x in activities)))
+    logger.info(
+        "Found %d potential kudo givings", sum((not x.has_kudo for x in activities))
+    )
     for activity in activities:
         activity.ensure_kudo()
