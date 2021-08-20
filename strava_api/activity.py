@@ -14,6 +14,10 @@ class Activity:
         self.title = str(title)
         self.has_kudo = bool(has_kudo)
 
+    def __repr__(self):
+        data = ", ".join({f"{key}={value!r}" for key, value in vars(self).items()})
+        return f"Activity({data})"
+
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
