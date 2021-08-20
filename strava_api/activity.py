@@ -15,7 +15,10 @@ class Activity:
         self.has_kudo = bool(has_kudo)
 
     def __repr__(self):
-        template = "Activity(username={0.username!r}, id={0.id}, title={0.title!r}, has_kudo={0.has_kudo})"
+        template = (
+            "Activity(username={0.username!r}, id={0.id},"
+            " title={0.title!r}, has_kudo={0.has_kudo})"
+        )
         return template.format(self)
 
     def __eq__(self, other):
