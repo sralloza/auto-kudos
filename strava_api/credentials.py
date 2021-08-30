@@ -38,10 +38,14 @@ class Credentials:
             return cls()
 
         if not CREDENTIALS_PATH.is_file():
-            with CREDENTIALS_PATH.open("wt", encoding="utf8") as file_handler:
-                YAML().dump({"email": None, "password": None}, file_handler)
-
             logger = getLogger(__name__)
+
+            try:
+                with CREDENTIALS_PATH.open("wt", encoding="utf8") as file_handler:
+                    YAML().dump({"email": None, "password": None}, file_handler)
+            except (PermissionError, OSError):
+                logger.error("Couldn't create sample credentials")
+
             logger.critical("Credentials not found")
             raise CredentialsNotFoundError("Credentials not found")
 
