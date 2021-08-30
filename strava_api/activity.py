@@ -10,9 +10,16 @@ class Activity:
 
     def __init__(self, username: str, activity_id: int, title: str, has_kudo: bool):
         self.username = str(username)
-        self.activity_id = int(activity_id)
+        self.id = int(activity_id)
         self.title = str(title)
         self.has_kudo = bool(has_kudo)
+
+    def __repr__(self):
+        template = (
+            "Activity(username={0.username!r}, id={0.id},"
+            " title={0.title!r}, has_kudo={0.has_kudo})"
+        )
+        return template.format(self)
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
@@ -24,7 +31,7 @@ class Activity:
         Returns:
             str: endpoint.
         """
-        return f"https://www.strava.com/feed/activity/{self.activity_id}/kudo"
+        return f"https://www.strava.com/feed/activity/{self.id}/kudo"
 
     def give_kudo(self):
         """Gives a kudo to the user that did the activity."""

@@ -3,7 +3,8 @@
 from logging import getLogger
 
 from bs4 import BeautifulSoup
-from requests import ConnectionError as ReqConnectionError, Session as ReqSession
+from requests import ConnectionError as ReqConnectionError
+from requests import Session as ReqSession
 
 from .credentials import credentials
 from .exceptions import LoginError

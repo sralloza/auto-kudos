@@ -11,6 +11,7 @@ from .exceptions import CredentialsNotFoundError
 CREDENTIALS_PATH = Path(__file__).parent.with_name("strava-creds.yml")
 
 
+# pylint: disable=too-few-public-methods
 class Credentials:
     """Credentials used to log into the strava website."""
 
