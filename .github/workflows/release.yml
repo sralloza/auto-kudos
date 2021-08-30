@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.1.8
+
+      - name: Install dependencies
+        run: poetry install --no-dev
+
+      - name: Build project for distribution
+        run: |
+          poetry build
+          poetry run python -c "import site; print(site.getsitepackages())"
+          cd $(poetry run python -c "import site; print(site.getsitepackages()[-1])")
+          zip -r /tmp/aws-lambda.zip .
+          cd $GITHUB_WORKSPACE
+          zip -rg /tmp/aws-lambda.zip strava_api
+          mv /tmp/aws-lambda.zip ./dist/aws-lambda-$(poetry version -s).zip
+          ls -l dist
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          prerelease: steps.check-version.outputs.prerelease == 'true'

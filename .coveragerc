@@ -7,6 +7,7 @@ omit =
     .venv/*
     launcher.py
     setup.py
+    strava_api/aws.py
 
 [report]
 exclude_lines =
