@@ -17,6 +17,8 @@ requests = "^2.26.0"
 black = {version = "^21.8b0", allow-prereleases = true}
 pytest = "^6.2.5"
 isort = "^5.9.3"
+pylint = "^2.10.2"
+pytest-cov = "^2.12.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
