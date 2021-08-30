@@ -28,8 +28,8 @@ jobs:
 
       - name: Lint with pylint module
         run: |
-          pylint strava_api --ignore=_version.py -d C0330,W0622,R0913,R0903,W0511
+          poetry run pylint strava_api --ignore=_version.py -d C0330,W0622,R0913,R0903,W0511
 
       - name: Linth with pylint tests
         run: |
-          pylint tests -d C0330,C0114,C0115,C0116,R0201,R0915,W0201,R0914,R0912,C0415,R0903,R0801,W0621,R1735
+          poetry run pylint tests -d C0330,C0114,C0115,C0116,R0201,R0915,W0201,R0914,R0912,C0415,R0903,R0801,W0621,R1735

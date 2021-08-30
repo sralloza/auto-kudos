@@ -27,7 +27,7 @@ jobs:
         run: poetry install
       - name: Lint with black module
         run: |
-          black --diff --check strava_api
+          poetry run black --diff --check strava_api
       - name: Lint with black tests
         run: |
-          black --diff --check tests
+          poetry run black --diff --check tests
