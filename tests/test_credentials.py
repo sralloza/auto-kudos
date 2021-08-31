@@ -24,7 +24,7 @@ class TestGenCredentials:
         yield
         mock.patch.stopall()
 
-    def test_fail(self, caplog):
+    def test_no_creds_fail(self, caplog):
         self.environ_m.get = dict().get
         self.creds_path_m.is_file.return_value = False
         caplog.set_level(10, "strava_api.credentials")
@@ -44,8 +44,30 @@ class TestGenCredentials:
         assert caplog.records[0].message == "Credentials not found"
         assert caplog.records[0].levelname == "CRITICAL"
 
+    @pytest.mark.parametrize("exc", [OSError, PermissionError])
+    def test_no_creds_fail_permission_error(self, caplog, exc):
+        self.creds_path_m.open.side_effect = exc
+        self.environ_m.get = dict().get
+        self.creds_path_m.is_file.return_value = False
+        caplog.set_level(10, "strava_api.credentials")
+
+        with pytest.raises(CredentialsNotFoundError, match="Credentials not found"):
+            Credentials.gen_credentials()
+
+        self.creds_path_m.open.assert_called_once_with("wt", encoding="utf8")
+        self.creds_path_m.open.return_value.__enter__.assert_not_called()
+        self.creds_path_m.open.return_value.__exit__.assert_not_called()
+        self.yaml_m.assert_not_called()
+        self.yaml_m.return_value.dump.assert_not_called()
+
+        assert len(caplog.records) == 2
+        assert caplog.records[0].message == "Couldn't create sample credentials"
+        assert caplog.records[0].levelname == "ERROR"
+        assert caplog.records[1].message == "Credentials not found"
+        assert caplog.records[1].levelname == "CRITICAL"
+
     @pytest.mark.parametrize("mode", ["env", "file"])
-    def test_gen_credentials_ok(self, caplog, mode):
+    def test_ok(self, caplog, mode):
         if mode == "env":
             creds = {"STRAVA_USERNAME": "email@example.com", "STRAVA_PASSWORD": "pass"}
             self.environ_m.get = creds.get
