@@ -8,6 +8,7 @@ omit =
     launcher.py
     setup.py
     strava_api/aws.py
+    strava_api/main.py
 
 [report]
 exclude_lines =
